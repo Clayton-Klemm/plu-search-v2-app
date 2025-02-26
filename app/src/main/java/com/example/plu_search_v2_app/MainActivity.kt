@@ -12,19 +12,29 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.plu_search_v2_app.ui.theme.Plusearchv2appTheme
@@ -78,7 +88,7 @@ class MainActivity : ComponentActivity() {
             Plusearchv2appTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     // All composable calls are now inside the setContent lambda.
-                    VoiceRecognitionScreen(
+                    SearchScreen(
                         onSpeakButtonClick = {
                             // Clear previous results.
                             searchResults = emptyList()
@@ -92,6 +102,19 @@ class MainActivity : ComponentActivity() {
                                 putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now")
                             }
                             voiceRecognitionLauncher.launch(intent)
+                        },
+                        onTextSearch = { searchText ->
+                            // Clear previous results.
+                            searchResults = emptyList()
+
+                            // Perform search using the text input
+                            val results = lookupTopPlu(searchText)
+                            searchResults = results
+
+                            // Display a Toast if no results are found.
+                            if (results.isEmpty()) {
+                                Toast.makeText(this, "No match found", Toast.LENGTH_LONG).show()
+                            }
                         },
                         searchResults = searchResults
                     )
@@ -189,39 +212,77 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun VoiceRecognitionScreen(
+fun SearchScreen(
     modifier: Modifier = Modifier,
     onSpeakButtonClick: () -> Unit,
+    onTextSearch: (String) -> Unit,
     searchResults: List<ProduceItem>
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var searchText by remember { mutableStateOf("") }
+
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // A large Speak button.
         Button(
             onClick = onSpeakButtonClick,
             modifier = Modifier
-                .padding(top = 50.dp, bottom = 30.dp)
+                .padding(top = 16.dp, bottom = 16.dp)
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(80.dp)
         ) {
             Text(text = "Speak", fontSize = 24.sp)
         }
+
+        // Text input field
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            label = { Text("Enter produce name") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onTextSearch(searchText)
+                    keyboardController?.hide()
+                }
+            )
+        )
+
+        // Search button
+        Button(
+            onClick = {
+                onTextSearch(searchText)
+                keyboardController?.hide()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(vertical = 8.dp)
+        ) {
+            Text("Search", fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Display the search results (if any).
         if (searchResults.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(top = 16.dp)
             ) {
                 searchResults.forEach { product ->
                     Text(
                         text = "${product.description} (PLU: ${product.plu})",
-                        fontSize = 30.sp,
+                        fontSize = 24.sp,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
