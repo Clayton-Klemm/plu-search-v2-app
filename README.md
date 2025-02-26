@@ -1,6 +1,12 @@
 # PLU Search App
 
-A Kotlin-based Android app (built using Kotlin DSL) for searching Coborn's, Inc. PLUs. This project targets Android 14.0 (API level 34).
+This is a Kotlin-based Android application designed to simplify the process of finding PLU (Price Look-Up) codes for Coborn's, Inc. Simply press the on-screen button and speak the name of the item. The app will then process your voice input and return the corresponding PLU details.
+
+This project is built using Kotlin DSL and targets Android 14.0 (API level 34).
+
+## Screenshots
+![garlic example2](https://github.com/user-attachments/assets/81a7b1d5-edbd-4428-8cde-ba9fd832afca)
+![grapes example2](https://github.com/user-attachments/assets/629f6942-5f84-4624-a9ef-2b3630258f5a)
 
 ## Prerequisites
 
