@@ -5,8 +5,9 @@ This is a Kotlin-based Android application designed to simplify the process of f
 This project is built using Kotlin DSL and targets Android 14.0 (API level 34).
 
 ## Screenshots
-![garlic example2](https://github.com/user-attachments/assets/81a7b1d5-edbd-4428-8cde-ba9fd832afca)
-![grapes example2](https://github.com/user-attachments/assets/629f6942-5f84-4624-a9ef-2b3630258f5a)
+![example1_edit](https://github.com/user-attachments/assets/e43c5ae5-46e0-4930-8aed-da01148b07c9)
+![example2_edit](https://github.com/user-attachments/assets/fc761747-db45-4a3c-86f1-d4f601de5e15)
+
 
 ## Prerequisites
 
